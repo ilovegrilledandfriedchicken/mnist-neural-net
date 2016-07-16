@@ -2,7 +2,7 @@ function [theta1, theta2, tacc_history, tracc_history, cost_history, ...
     terrors, trerrors] = trainNN(theta1, theta2, X, y, miniBatchSize, ...
     alpha, epochs, lambda, labels, mu, XTest, labelsTest)
 %% Comments %%
-% theta1 = Weights and biases for hidden layer (input l x hidden l)
+% theta1 = Weights and biases for hidden layer (input l+1 x hidden l)
 % theta2 = Weights and biases for output layer (hidden l +1 x output l)
 % cost = The cost, we use the cross-entropy-cost to prevent learning slowdowns
 % X = Training set of 60,000. Matrix of 60,000 x input l
@@ -26,8 +26,8 @@ tacc_history = zeros(epochs, 1);
 terrors = zeros(epochs,1);
 trerrors = zeros(epochs,1);
 numBatches = (size(X,1))/m;
-v1 = 0;
-v2 = 0;
+v1 = 0; %Initializes velocity
+v2 = 0; %Initializes velocity
 w2 = theta2; 
 w1 = theta1;
 w2(1,:) = 0; %Sets biases to 0 so unaffected by weight decay
@@ -41,19 +41,18 @@ w1(1,:) = 0; %Sets biases to 0 so unaffected by weight decay
             % Feedforward
             z2 = a1*theta1; % m x hl
             a2 = [ones(m,1) sigmoid(z2)]; %m x hl+1
-            z3 = a2*theta2;
+            z3 = a2*theta2; % m x o
             h = sigmoid(z3); % m x o
             reg = (lambda/(2*m))*(sum(sum(w1.^2))+sum(sum(w2.^2)));
             cost = (1/m)*(sum(sum( (-yT.*log(h)) - ((1-yT).*log(1-h)) ))) + reg;
         
-            % Backpropagation for weights
+            % Backpropagation
             d3 = h - yT; % m x o
             d2 = d3 * (theta2(2:end,:))' .* sigmoidPrime(z2); % m x hl
-            % (m x hl) .* (m x hl)
             
             % Gradient Descent
-            nablaT2 = (1/m) * (a2'*d3 + lambda*w2); 
-            nablaT1 = (1/m) * (a1'*d2 + lambda*w1); 
+            nablaT2 = (1/m) * (a2'*d3 + lambda*w2); %hl+1 x o
+            nablaT1 = (1/m) * (a1'*d2 + lambda*w1); %il+1 x hl
         	
         	v1 = mu*v1 - alpha*nablaT1;
         	theta1 = theta1 + v1;

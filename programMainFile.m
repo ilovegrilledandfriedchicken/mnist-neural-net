@@ -16,13 +16,13 @@ y = temp(labels,:); %Makes y a 60,000 x 10 matrix, where each column
 XTest = loadMNISTImages('t10k-images-idx3-ubyte');
 XTest = XTest';
 labelsTest = loadMNISTLabels('t10k-labels-idx1-ubyte');
-yTest = temp(labelsTest+1,:);
+labelsTest = labelsTest+1;
 
 fprintf('Data has loaded, press enter to continue.\n');
 pause;
 %% Set Neural Net Structure %%
 input = size(X,2);% Size of input layer (784)
-hidden = 1000; % Size of hidden layer
+hidden = 200; % Size of hidden layer
 output = size(y,2); % Size of output layer (10)
 m = size(X,1);
 
@@ -38,10 +38,10 @@ theta1 = [bias1 weights1]'; %Adds row of biases to param matrix, so 1st row
 theta2 = [bias2 weights2]'; %is biases, followed by rows of all the weights
 %% Set Hyper-parameters %%
 miniBatchSize = 500; %size of mini batch used
-epochs = 50; %iterations to train for
-lambda = 0; %regularization/weight decay parameter
-alpha = 0.01; %learning rate
-mu = 0.9; %momentum coefficient
+epochs = 500; %iterations to train for
+lambda = 5; %regularization/weight decay parameter
+alpha = 0.0001; %learning rate
+mu = 0.7; %momentum coefficient
 
 fprintf('Press enter to start training.\n');
 pause;
